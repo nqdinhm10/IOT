@@ -25,53 +25,56 @@ mhrdid = "mhrda1011"
 
 
 while True:
-    
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
+    try:
+        humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
 
-    if humidity is not None and temperature is not None:
-        e = datetime.datetime.now()
-        print(e)
-        
-        temp = '%.2f' % (temperature)
-        hum = '%.2f' % (humidity)
-        print('Temperature = '+temp+'*C \t''Humidity = '+hum+'%')
-        urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_dht22.php?sensorid="+dht22id+"&temp="+temp+"&hum="+hum).read()
-        
-    else:
-        print('Fail!!!')
-        
-    if GPIO.input(4):
-        
-        mq135qlty = "1"
-        print("Good atmosphere")
-        urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mq135.php?sensorid="+mq135id+"&quality="+mq135qlty).read()
-        
-    else:
-        
-        mq135qlty = "2"
-        print("Bad atmosphere")
-        urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mq135.php?sensorid="+mq135id+"&quality="+mq135qlty).read()
-        
-    if not no_rain.is_active:
-        
-        mhrdqlty = "2"
-        print("Water leak")
-        urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mhrd.php?sensorid="+mhrdid+"&quality="+mhrdqlty).read()
-        
-    else:
-  
-        mhrdqlty = "1"
-        print("No water leak")
-        urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mhrd.php?sensorid="+mhrdid+"&quality="+mhrdqlty).read()
-        
-        
-    if(GPIO.input(4) and no_rain.is_active):
-        GPIO.output(BuzzerPin, GPIO.LOW)
-    else:
-        GPIO.output(BuzzerPin, GPIO.HIGH)
-        
-    cpu = CPUTemperature()
-    cputemp = cpu.temperature
-    print('CPU Temperature = '+str(cputemp)+'*C')
-    print('\n')
-    sleep(300)
+        if humidity is not None and temperature is not None:
+            e = datetime.datetime.now()
+            print(e)
+
+            temp = '%.2f' % (temperature)
+            hum = '%.2f' % (humidity)
+            print('Temperature = '+temp+'*C \t''Humidity = '+hum+'%')
+            urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_dht22.php?sensorid="+dht22id+"&temp="+temp+"&hum="+hum).read()
+
+        else:
+            print('Fail!!!')
+
+        if GPIO.input(4):
+
+            mq135qlty = "1"
+            print("Good atmosphere")
+            urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mq135.php?sensorid="+mq135id+"&quality="+mq135qlty).read()
+
+        else:
+
+            mq135qlty = "2"
+            print("Bad atmosphere")
+            urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mq135.php?sensorid="+mq135id+"&quality="+mq135qlty).read()
+
+        if not no_rain.is_active:
+
+            mhrdqlty = "2"
+            print("Water leak")
+            urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mhrd.php?sensorid="+mhrdid+"&quality="+mhrdqlty).read()
+
+        else:
+
+            mhrdqlty = "1"
+            print("No water leak")
+            urlopen("https://dth185247kl.000webhostapp.com/cambien/add_data_mhrd.php?sensorid="+mhrdid+"&quality="+mhrdqlty).read()
+
+
+        if(GPIO.input(4) and no_rain.is_active):
+            GPIO.output(BuzzerPin, GPIO.LOW)
+        else:
+            GPIO.output(BuzzerPin, GPIO.HIGH)
+
+        cpu = CPUTemperature()
+        cputemp = cpu.temperature
+        print('CPU Temperature = '+str(cputemp)+'*C')
+        print('\n')
+        sleep(300)
+    except Exception as e:
+        print("Errored out!!!", e)
+        print("Retrying...")
